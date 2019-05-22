@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-
+from decouple import config
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,9 +25,8 @@ SECRET_KEY = '8&o0el9ez#ts-g(mnb8er0r78lcmg0hf33ychm@1&yo&32svf9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [
+    s.strip() for s in v.split(',')], default='*')
 # Application definition
 
 INSTALLED_APPS = [
