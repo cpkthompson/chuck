@@ -2,7 +2,6 @@ import requests
 from decouple import config
 from django.http import HttpResponse
 from django.shortcuts import render
-from fabric.api import local
 from fabric2 import  Connection
 from django.shortcuts import render
 from decouple import config
