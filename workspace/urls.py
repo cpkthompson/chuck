@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import path, include
 from  workspace.views import workspace , prep_files, send_files
 
+app_name = 'workspace'
 urlpatterns = [
     path('', workspace, name='my-workspace'),
     path('prepare-files/<str:container_name>/', prep_files, name='prepare-files'),
