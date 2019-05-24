@@ -14,9 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin
 from django.urls import path, include
-from workspace.views import workspace, prep_files, send_files, install
+from  workspace.views import workspace , prep_files, send_files
 
 app_name = 'workspace'
 urlpatterns = [
