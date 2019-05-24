@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from workspace import views as workspace_views
+# from workspace import views as workspace_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
