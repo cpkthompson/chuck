@@ -20,17 +20,17 @@ def prep_files(request, container_name):
     command_var = config('COMMAND_VAR', default='COMMAND_VAR')
     root_image_name = config('ROOT_IMAGE_NAME', default='ROOT_IMAGE_NAME')
     connect = Connection(host=host)
-    root_container_id = connect.local(f"sudo docker ps | grep {root_image_name} | awk '{command_var}'").stdout.rstrip()
-    connect.local(f'sudo docker cp {root_container_id}:/data/workspaces/{container_name}/ ./{container_name}')
+    root_container_id = connect.local('sudo docker ps | grep {}'.format(root_image_name)).stdout.rstrip()[0]
+    connect.local('sudo docker cp {}:/data/workspaces/{}/ ./{}'.format(root_container_id, container_name, container_name))
     ignore_dirs = ['.che', 'node_modules', '.pyc', 'venv']
     ignore_dir_string = ''
     for dir in ignore_dirs:
-        ignore_dir_string = ignore_dir_string + f' --exclude={container_name}/{dir}'
-    connect.local(f'tar {ignore_dir_string} -czf {container_name}.tar.gz {container_name}/ -C .')
+        ignore_dir_string = ignore_dir_string + " --exclude={}/{}".format(container_name, dir)
+    connect.local("tar {} -czf {}.tar.gz {}/ -C .".format(ignore_dir_string, container_name, container_name))
     return HttpResponse('done')
 
 def send_files(request, container_name):
-    container_zip = f'./{container_name}.tar.gz'
+    container_zip = "./{}.tar.gz".format((container_name))
     JENKINS_PATH = config('JENKINS_PATH', default='JENKINS_PATH')
     JENKINS_IP = config('JENKINS_IP', default='JENKINS_IP')
     JENKINS_PORT = config('JENKINS_PORT', default='JENKINS_PORT', cast=int)
