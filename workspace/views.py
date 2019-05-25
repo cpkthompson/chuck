@@ -29,17 +29,21 @@ def prep_files(request, container_name):
     connect.local("tar {} -czf {}.tar.gz {}/ -C .".format(ignore_dir_string, container_name, container_name))
     return HttpResponse('done')
 
-def send_files(request, container_name):
+def send_files(request, container_name, candidate_name):
     container_zip = "./{}.tar.gz".format((container_name))
     JENKINS_PATH = config('JENKINS_PATH', default='JENKINS_PATH')
     JENKINS_IP = config('JENKINS_IP', default='JENKINS_IP')
     JENKINS_PORT = config('JENKINS_PORT', default='JENKINS_PORT', cast=int)
     JENKINS_USER = config('JENKINS_USER', default='JENKINS_USER')
     JENKINS_PASW = config('JENKINS_PASW', default='JENKINS_PASW')
+    JENKINS_TOKEN = config('JENKINS_TOKEN', default='JENKINS_TOKEN')
+    JENKINS_URL = config('JENKINS_URL', default='JENKINS_URL')
+    JENKINS_USER_ID =config('JENKINS_USER_ID', default='JENKINS_USER_ID')
     c = Connection(JENKINS_IP, port=JENKINS_PORT, user=JENKINS_USER, connect_kwargs={'password': JENKINS_PASW})
     c.put(container_zip, remote=JENKINS_PATH)
     # # make call to jenkins to trigger build and shut down server
-    res = requests.post(f'https://ide:113e1546e2c0046919b7434d8326adcc94@phil.codeln.com/job/copy_files_to_workspace/'
-                        'buildWithParameters?directory_name={workspaceixzcyjq0hk9p3gtt}&candidate_name=juliet?token=1'
-                        '13e1546e2c0046919b7434d8326adcc94')
+    res = requests.post("https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?"
+                        "directory_name={}&candidate_name={}?token={}".
+                        format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,
+                               container_name, candidate_name, JENKINS_TOKEN))
     return HttpResponse('OK')
