@@ -20,8 +20,8 @@ def prep_files(request, container_name):
     pasw = config('PASW', default='PASW')
     root_image_name = config('ROOT_IMAGE_NAME', default='ROOT_IMAGE_NAME')
     connect = Connection(host=host)
-    root_container_id = connect.local('echo {} | sudo docker ps | grep {}'.format( pasw, root_image_name)).stdout.rstrip()[0]
-    connect.local('echo {} | sudo docker cp {}:/data/workspaces/{}/ ./{}'.format(pasw, root_container_id, container_name, container_name))
+    root_container_id = connect.local('echo {} | sudo -S docker ps | grep {}'.format(pasw, root_image_name)).stdout.rstrip()[0]
+    connect.local('echo {} | sudo -S docker cp {}:/data/workspaces/{}/ ./{}'.format(pasw, root_container_id, container_name, container_name))
     ignore_dirs = ['.che', 'node_modules', '.pyc', 'venv']
     ignore_dir_string = ''
     for dir in ignore_dirs:
