@@ -17,11 +17,11 @@ def workspace(request):
 
 def prep_files(request, container_name):
     host = config('MACHINE', default='MACHINE')
-    command_var = config('COMMAND_VAR', default='COMMAND_VAR')
+    pasw = config('PASW', default='PASW')
     root_image_name = config('ROOT_IMAGE_NAME', default='ROOT_IMAGE_NAME')
     connect = Connection(host=host)
-    root_container_id = connect.local('sudo docker ps | grep {}'.format(root_image_name)).stdout.rstrip()[0]
-    connect.local('sudo docker cp {}:/data/workspaces/{}/ ./{}'.format(root_container_id, container_name, container_name))
+    root_container_id = connect.local('echo {} | sudo docker ps | grep {}'.format( pasw, root_image_name)).stdout.rstrip()[0]
+    connect.local('echo {} | sudo docker cp {}:/data/workspaces/{}/ ./{}'.format(pasw, root_container_id, container_name, container_name))
     ignore_dirs = ['.che', 'node_modules', '.pyc', 'venv']
     ignore_dir_string = ''
     for dir in ignore_dirs:
