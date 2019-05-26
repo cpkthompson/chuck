@@ -21,5 +21,5 @@ app_name = 'workspace'
 urlpatterns = [
     path('', workspace, name='my-workspace'),
     path('prepare-files/<str:container_name>/', prep_files, name='prepare-files'),
-    path('send-files/<str:container_name>', send_files, name='send-files'),
+    path('send-files/<str:container_name>/<str:candidate_name>/', send_files, name='send-files'),
 ]
