@@ -42,7 +42,7 @@ def send_files(request, container_name, candidate_name):
     c = Connection(JENKINS_IP, port=JENKINS_PORT, user=JENKINS_USER, connect_kwargs={'password': JENKINS_PASW})
     c.put(container_zip, remote=JENKINS_PATH)
     # # make call to jenkins to trigger build and shut down server
-    res = requests.post("https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}?".
+    res = requests.post("https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}".
                         format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,
                                JENKINS_TOKEN, container_name, candidate_name ))
     return HttpResponse('OK')
