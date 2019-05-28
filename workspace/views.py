@@ -10,8 +10,7 @@ from decouple import config
 def workspace(request):
 
     context = {
-        'url': config('HOSTNAME'),
-        'workspace_name': config('WORKSPACE_NAME')
+        'url': config('HOSTNAME')
     }
     return render(request,'workspace/workspace.html', context=context)
 
