@@ -6,14 +6,25 @@ from fabric2 import  Connection
 from django.shortcuts import render
 from decouple import config
 # Create your views here.
+from workspace.models import IdeUser
+
 
 def workspace(request):
-
+    workspaces = IdeUser.objects.all()
+    workspace_current = ''
+    for w in workspaces:
+        workspace_current += w.workspace_name
     context = {
-        'url': config('HOSTNAME')
+        'url': config('HOSTNAME'),
+        'workspace_name': workspace_current
     }
     return render(request,'workspace/workspace.html', context=context)
 
+
+def ide_user(request, workspace_name):
+    my_workspace_name = workspace_name
+    my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name)
+    return HttpResponse('OK')
 
 def prep_files(request, container_name):
     host = config('MACHINE', default='MACHINE')
