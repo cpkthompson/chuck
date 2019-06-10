@@ -1,29 +1,39 @@
+import datetime
+
 import requests
-from decouple import config
 from django.http import HttpResponse
-from django.shortcuts import render
 from fabric2 import  Connection
 from django.shortcuts import render
 from decouple import config
 # Create your views here.
 from workspace.models import IdeUser
 
+def convert_time(seconds):
+    days = int(seconds // (3600 * 24))
+    hours = int((seconds // 3600) % 24)
+    minutes = int((seconds // 60) % 60)
+    seconds = int(seconds % 60)
+    return f'{hours} hrs : {minutes} min : {seconds} sec'
 
 def workspace(request):
     workspaces = IdeUser.objects.all()
     workspace_current = ''
     for w in workspaces:
         workspace_current += w.workspace_name
+        time = w.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
+        workspace_end_time = convert_time(time.total_seconds())
+        complete = w.finished
     context = {
-        'url': config('HOSTNAME'),
-        'workspace_name': workspace_current
+        'workspace_name': workspace_current,
+        'workspace_end_time': workspace_end_time,
+        'completed': complete,
     }
     return render(request,'workspace/workspace.html', context=context)
 
 
-def ide_user(request, workspace_name):
+def ide_user(request, workspace_name, time):
     my_workspace_name = workspace_name
-    my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name)
+    my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name, end_time=time)
     return HttpResponse('OK')
 
 def prep_files(request, container_name):
@@ -57,3 +67,20 @@ def send_files(request, container_name, candidate_name):
                         format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,
                                JENKINS_TOKEN, container_name, candidate_name ))
     return HttpResponse('OK')
+
+def completed(request):
+    workspaces = IdeUser.objects.all()
+    workspace_current = ''
+    for w in workspaces:
+        workspace_current += w.workspace_name
+        time = w.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
+        workspace_end_time = convert_time(time.total_seconds())
+        w.finished = True
+        complete = w.finished
+        w.save()
+    context = {
+        'workspace_name': workspace_current,
+        'workspace_end_time': workspace_end_time,
+        'completed': complete,
+    }
+    return render(request,'workspace/workspace.html', context=context)

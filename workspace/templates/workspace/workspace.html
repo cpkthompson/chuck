@@ -1,7 +1,109 @@
+{% load static %}
 <html>
-<head></head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
 <body style="background-color: black">
-<iframe src="http://{{url}}:8080/dashboard/#/ide/che/{{ workspace_name }}" style="height: 100%;width: 100%;"></iframe>
-git add .
+<nav class="navbar is-transparent">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{% url 'workspace:my-workspace' %}">
+            <img src="{% static 'ide/codeln_black.png' %}" alt="" width="112" height="28">
+        </a>
+        <div class="navbar-burger burger" data-target="navbarExampleTransparentExample">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="field is-grouped">
+                    <p class="control">
+                        <a class="button is-primary"
+                           href="#">
+              <span class="icon">
+                  <i class="fas fa-user-clock"></i>
+              </span>
+                            {% if completed %}
+                                <span> Project Completed</span>
+                            {% else %}
+                                <span>Time Remaining : {{ workspace_end_time }}</span>
+                            {% endif %}
+                        </a>
+                    </p>
+                </div>
+            </div>
+            {% if not completed %}
+                <div class="navbar-item">
+                    <div class="field is-grouped">
+                        <p class="control">
+                            <a class="button is-primary"
+                               href="{% url 'workspace:completed' %}">
+              <span class="icon">
+                  <i class="fas fa-check-circle"></i>
+              </span>
+                                <span>Finish Project</span>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</nav>
+{% if completed %}
+    <section class="hero is-info is-large">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    Congratulations on completing your project!!!
+                </h1>
+                <h2 class="subtitle">
+                    Your work will now be submitted for analysis.
+                </h2>
+                <h2 class="subtitle">
+                    <a href="#">Go back to dashboard</a>
+                </h2>
+            </div>
+        </div>
+    </section>
+{% else %}
+    <iframe src="http://{{ url }}:8080/dashboard/#/ide/che/{{ workspace_name }}"
+            style="height: 100%;width: 100%;"></iframe>
+{% endif %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Get all "navbar-burger" elements
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        // Check if there are any navbar burgers
+        if ($navbarBurgers.length > 0) {
+
+            // Add a click event on each of them
+            $navbarBurgers.forEach(el => {
+                el.addEventListener('click', () => {
+
+                    // Get the target from the "data-target" attribute
+                    const target = el.dataset.target;
+                    const $target = document.getElementById(target);
+
+                    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                    el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+
+                });
+            });
+        }
+
+    });
+</script>
 </body>
 </html>

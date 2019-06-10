@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path, include
-from  workspace.views import workspace , prep_files, send_files, ide_user
+from  workspace.views import workspace , prep_files, send_files, ide_user, completed
 
 app_name = 'workspace'
 urlpatterns = [
@@ -23,4 +23,5 @@ urlpatterns = [
     path('ide-user/<str:workspace_name>/', ide_user,name='ide-user'),
     path('prepare-files/<str:container_name>/', prep_files, name='prepare-files'),
     path('send-files/<str:container_name>/<str:candidate_name>/', send_files, name='send-files'),
+    path('completed/', completed, name='completed'),
 ]
