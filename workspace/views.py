@@ -1,12 +1,14 @@
 import datetime
 
 import requests
-from django.http import HttpResponse
-from fabric2 import  Connection
-from django.shortcuts import render
 from decouple import config
+from django.http import HttpResponse
+from django.shortcuts import render
+from fabric2 import Connection
+
 # Create your views here.
 from workspace.models import IdeUser
+
 
 def convert_time(seconds):
     days = int(seconds // (3600 * 24))
@@ -15,20 +17,22 @@ def convert_time(seconds):
     seconds = int(seconds % 60)
     return f'{hours} hrs : {minutes} min : {seconds} sec'
 
+
 def workspace(request):
-    workspaces = IdeUser.objects.all()
-    workspace_current = ''
-    for w in workspaces:
-        workspace_current += w.workspace_name
-        time = w.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
-        workspace_end_time = convert_time(time.total_seconds())
-        complete = w.finished
+    workspacem = IdeUser.objects.all()[0]
+    workspace_current = workspacem.workspace_name
+    time = workspacem.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
+    workspace_end_time = convert_time(time.total_seconds())
+    workspacem.finished = True
+    complete = workspacem.finished
+    workspacem.save()
+
     context = {
         'workspace_name': workspace_current,
         'workspace_end_time': workspace_end_time,
         'completed': complete,
     }
-    return render(request,'workspace/workspace.html', context=context)
+    return render(request, 'workspace/workspace.html', context=context)
 
 
 def ide_user(request, workspace_name, time):
@@ -36,19 +40,24 @@ def ide_user(request, workspace_name, time):
     my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name, end_time=time)
     return HttpResponse('OK')
 
+
 def prep_files(request, container_name):
     host = config('MACHINE', default='MACHINE')
     pasw = config('PASW', default='PASW')
     root_image_name = config('ROOT_IMAGE_NAME', default='ROOT_IMAGE_NAME')
     connect = Connection(host=host)
-    root_container_id = connect.local('echo {} | sudo -S docker ps | grep {}'.format(pasw, root_image_name)).stdout.rstrip()[0]
-    connect.local('echo {} | sudo -S docker cp {}:/data/workspaces/{}/ ./{}'.format(pasw, root_container_id, container_name, container_name))
+    root_container_id = \
+    connect.local('echo {} | sudo -S docker ps | grep {}'.format(pasw, root_image_name)).stdout.rstrip()[0]
+    connect.local(
+        'echo {} | sudo -S docker cp {}:/data/workspaces/{}/ ./{}'.format(pasw, root_container_id, container_name,
+                                                                          container_name))
     ignore_dirs = ['.che', 'node_modules', '.pyc', 'venv']
     ignore_dir_string = ''
     for dir in ignore_dirs:
         ignore_dir_string = ignore_dir_string + " --exclude={}/{}".format(container_name, dir)
     connect.local("tar {} -czf {}.tar.gz {}/ -C .".format(ignore_dir_string, container_name, container_name))
     return HttpResponse('done')
+
 
 def send_files(request, container_name, candidate_name):
     container_zip = "./{}.tar.gz".format((container_name))
@@ -59,28 +68,29 @@ def send_files(request, container_name, candidate_name):
     JENKINS_PASW = config('JENKINS_PASW', default='JENKINS_PASW')
     JENKINS_TOKEN = config('JENKINS_TOKEN', default='JENKINS_TOKEN')
     JENKINS_URL = config('JENKINS_URL', default='JENKINS_URL')
-    JENKINS_USER_ID =config('JENKINS_USER_ID', default='JENKINS_USER_ID')
+    JENKINS_USER_ID = config('JENKINS_USER_ID', default='JENKINS_USER_ID')
     c = Connection(JENKINS_IP, port=JENKINS_PORT, user=JENKINS_USER, connect_kwargs={'password': JENKINS_PASW})
     c.put(container_zip, remote=JENKINS_PATH)
     # # make call to jenkins to trigger build and shut down server
-    res = requests.post("https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}".
-                        format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,
-                               JENKINS_TOKEN, container_name, candidate_name ))
+    res = requests.post(
+        "https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}".
+        format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,
+               JENKINS_TOKEN, container_name, candidate_name))
     return HttpResponse('OK')
 
+
 def completed(request):
-    workspaces = IdeUser.objects.all()
-    workspace_current = ''
-    for w in workspaces:
-        workspace_current += w.workspace_name
-        time = w.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
-        workspace_end_time = convert_time(time.total_seconds())
-        w.finished = True
-        complete = w.finished
-        w.save()
+    workspacem = IdeUser.objects.all()[0]
+    workspace_current = workspacem.workspace_name
+    time = workspacem.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
+    workspace_end_time = convert_time(time.total_seconds())
+    workspacem.finished = True
+    complete = workspacem.finished
+    workspacem.save()
+
     context = {
         'workspace_name': workspace_current,
         'workspace_end_time': workspace_end_time,
         'completed': complete,
     }
-    return render(request,'workspace/workspace.html', context=context)
+    return render(request, 'workspace/workspace.html', context=context)
