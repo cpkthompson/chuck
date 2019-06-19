@@ -15,7 +15,7 @@ def convert_time(seconds):
     hours = int((seconds // 3600) % 24)
     minutes = int((seconds // 60) % 60)
     seconds = int(seconds % 60)
-    return f'{hours} hrs : {minutes} min : {seconds} sec'
+    return '{} hrs : {} min : {} sec'.format(hours, minutes, seconds)
 
 
 def workspace(request):
