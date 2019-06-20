@@ -24,7 +24,10 @@ def workspace(request):
     workspace_current = workspacem.workspace_name
     time = workspacem.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
     workspace_end_time = convert_time(time.total_seconds())
+    workspacem.finished =False
     complete = workspacem.finished
+    workspacem.save()
+
     context = {
         'workspace_name': workspace_current,
         'workspace_end_time': workspace_end_time,
