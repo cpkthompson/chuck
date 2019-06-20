@@ -4,6 +4,7 @@ import requests
 from decouple import config
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from fabric2 import Connection
 
 # Create your views here.
@@ -34,7 +35,7 @@ def workspace(request):
     }
     return render(request, 'workspace/workspace.html', context=context)
 
-
+@csrf_exempt
 def ide_user(request, workspace_name, time):
     my_workspace_name = workspace_name
     my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name, end_time=time)
