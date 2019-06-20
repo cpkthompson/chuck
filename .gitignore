@@ -105,4 +105,3 @@ db.sqlite3
 /frontend/templates/invitations/email/mestsubmission.html
 /test.html
 ver.txt
-static/
