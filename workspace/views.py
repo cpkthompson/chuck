@@ -25,8 +25,10 @@ def workspace(request):
     time = workspacem.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
     workspace_end_time = convert_time(time.total_seconds())
     complete = workspacem.finished
+    url = workspacem.url
 
     context = {
+        'url': url,
         'workspace_name': workspace_current,
         'workspace_end_time': workspace_end_time,
         'completed': complete,
@@ -34,9 +36,9 @@ def workspace(request):
     return render(request, 'workspace/workspace.html', context=context)
 
 @csrf_exempt
-def ide_user(request, workspace_name, time):
+def ide_user(request, workspace_name, time, url):
     my_workspace_name = workspace_name
-    my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name, end_time=time)
+    my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name, end_time=time, url=url)
     return HttpResponse('OK')
 
 
@@ -86,8 +88,11 @@ def completed(request):
     workspacem.finished = True
     complete = workspacem.finished
     workspacem.save()
+    url = workspacem.url
+
 
     context = {
+        'url': url,
         'workspace_name': workspace_current,
         'workspace_end_time': workspace_end_time,
         'completed': complete,
