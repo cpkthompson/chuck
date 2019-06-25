@@ -40,8 +40,9 @@ def ide_user(request):
     my_workspace_name = request.GET.get('workspace_name')
     time = request.GET.get('time')
     url = request.GET.get('url')
+    fine_url = "http://{}".format(url)
     my_time = datetime.datetime.fromtimestamp(float(time))
-    my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name, end_time=my_time, url=url)
+    my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name, end_time=my_time, url=fine_url)
     return HttpResponse('OK')
 
 
