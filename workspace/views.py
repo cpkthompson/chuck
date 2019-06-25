@@ -46,7 +46,8 @@ def ide_user(request):
     return HttpResponse('OK')
 
 
-def prep_files(request, container_name):
+def prep_files(request):
+    container_name = request.GET.get('container_name')
     host = config('MACHINE', default='MACHINE')
     pasw = config('PASW', default='PASW')
     root_image_name = config('ROOT_IMAGE_NAME', default='ROOT_IMAGE_NAME')
@@ -64,7 +65,9 @@ def prep_files(request, container_name):
     return HttpResponse('done')
 
 
-def send_files(request, container_name, candidate_name):
+def send_files(request):
+    container_name = request.GET.get('container_name')
+    candidate_name = request.GET.get('candidate_name')
     container_zip = "./{}.tar.gz".format((container_name))
     JENKINS_PATH = config('JENKINS_PATH', default='JENKINS_PATH')
     JENKINS_IP = config('JENKINS_IP', default='JENKINS_IP')
