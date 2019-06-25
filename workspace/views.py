@@ -38,7 +38,7 @@ def workspace(request):
 @csrf_exempt
 def ide_user(request, workspace_name, time, url):
     my_workspace_name = workspace_name
-    my_time = datetime.datetime.fromtimestamp(time)
+    my_time = datetime.datetime.fromtimestamp(float(time))
     my_workspace = IdeUser.objects.create(workspace_name=my_workspace_name, end_time=my_time, url=url)
     return HttpResponse('OK')
 
