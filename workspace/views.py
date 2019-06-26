@@ -68,6 +68,8 @@ def prep_files(request):
 def send_files(request):
     container_name = request.GET.get('container_name')
     candidate_name = request.GET.get('candidate_name')
+    company = request.GET.get('company')
+    name = "{}-{}".format(company.lower(), candidate_name.lower())
     container_zip = "./{}.tar.gz".format((container_name))
     JENKINS_PATH = config('JENKINS_PATH', default='JENKINS_PATH')
     JENKINS_IP = config('JENKINS_IP', default='JENKINS_IP')
@@ -83,7 +85,7 @@ def send_files(request):
     res = requests.post(
         "https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}".
         format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,
-               JENKINS_TOKEN, container_name, candidate_name))
+               JENKINS_TOKEN, container_name, name))
     return HttpResponse('OK')
 
 
