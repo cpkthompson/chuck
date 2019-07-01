@@ -57,7 +57,7 @@ def prep_files(request):
     connect.local(
         'echo {} | sudo -S docker cp {}:/data/workspaces/{}/ ./{}'.format(pasw, root_container_id, container_name,
                                                                           container_name))
-    ignore_dirs = ['.che', 'node_modules', '.pyc', 'venv']
+    ignore_dirs = ['.che', 'node_modules', '.pyc', 'venv', '.git', '.idea', '.gitignore']
     ignore_dir_string = ''
     for dir in ignore_dirs:
         ignore_dir_string = ignore_dir_string + " --exclude={}/{}".format(container_name, dir)
@@ -68,6 +68,7 @@ def prep_files(request):
 def send_files(request):
     container_name = request.GET.get('container_name')
     candidate_name = request.GET.get('candidate_name')
+    project_name = request.GET.get('project_name')
     company = request.GET.get('company')
     name = "{}-{}".format(company.lower(), candidate_name.lower())
     container_zip = "./{}.tar.gz".format((container_name))
@@ -83,9 +84,9 @@ def send_files(request):
     c.put(container_zip, remote=JENKINS_PATH)
     # # make call to jenkins to trigger build and shut down server
     res = requests.post(
-        "https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}".
-        format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,
-               JENKINS_TOKEN, container_name, name))
+        "https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}"
+        "&project_name={}".format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,JENKINS_TOKEN, container_name,
+                                  name, project_name))
     return HttpResponse('OK')
 
 
