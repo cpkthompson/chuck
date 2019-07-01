@@ -70,6 +70,7 @@ def send_files(request):
     candidate_name = request.GET.get('candidate_name')
     project_name = request.GET.get('project_name')
     company = request.GET.get('company')
+    framework = request.GET.get('framework')
     name = "{}-{}".format(company.lower(), candidate_name.lower())
     container_zip = "./{}.tar.gz".format((container_name))
     JENKINS_PATH = config('JENKINS_PATH', default='JENKINS_PATH')
@@ -83,12 +84,18 @@ def send_files(request):
     c = Connection(JENKINS_IP, port=JENKINS_PORT, user=JENKINS_USER, connect_kwargs={'password': JENKINS_PASW})
     c.put(container_zip, remote=JENKINS_PATH)
     # # make call to jenkins to trigger build and shut down server
-    res = requests.post(
-        "https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}"
-        "&project_name={}".format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,JENKINS_TOKEN, container_name,
-                                  name, project_name))
-    return HttpResponse('OK')
 
+    # resp1 = requests.post('https://ide:113e1546e2c0046919b7434d8326adcc94@phil.codeln.com/createItem?'
+    #                       'name=testCopyJob&mode=copy&from=copy_files_to_workspace')
+    resp1 = requests.post(
+        "https://{}:{}@{}/createItem?name={}&mode=copy&from={}".format(JENKINS_USER_ID,JENKINS_TOKEN,JENKINS_URL,name,
+                                                                  framework))
+    if resp1.status_code == 200:
+        res = requests.post(
+            "https://{}:{}@{}/job/copy_files_to_workspace/buildWithParameters?token={}&directory_name={}&candidate_name={}"
+            "&project_name={}".format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,JENKINS_TOKEN, container_name,
+                                      name, project_name))
+        return HttpResponse('OK')
 
 def completed(request):
     workspacem = IdeUser.objects.all()[0]
