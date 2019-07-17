@@ -91,7 +91,7 @@ def send_files(request):
                                                                   framework))
     if resp1.status_code in [201, 200]:
         res = requests.post('https://{}:{}@{}/job/{}/disable'.format(JENKINS_USER_ID, JENKINS_TOKEN,JENKINS_URL,name))
-        res = requests.post('https://{}:{}@{}/job/{}/enable'.format(JENKINS_USER_ID, JENKINS_TOKEN,JENKINS_URL,name))
+        res1 = requests.post('https://{}:{}@{}/job/{}/enable'.format(JENKINS_USER_ID, JENKINS_TOKEN,JENKINS_URL,name))
         res2 = requests.post(
             "https://{}:{}@{}/job/{}/buildWithParameters?token={}&directory_name={}&candidate_name={}"
             "&project_name={}".format(JENKINS_USER_ID, JENKINS_TOKEN, JENKINS_URL,name, JENKINS_TOKEN, container_name,
