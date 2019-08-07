@@ -119,7 +119,7 @@ def completed(request):
     }
     return render(request, 'workspace/workspace.html', context=context)
 
-def reopen_workspcae(request):
+def reopen_workspace(request):
     workspacem = IdeUser.objects.all()[0]
     workspace_current = workspacem.workspace_name
     time = workspacem.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
