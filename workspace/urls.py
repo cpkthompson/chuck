@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.urls import path
 
-from workspace.views import workspace, prep_files, send_files, ide_user, completed
+from workspace.views import workspace, prep_files, send_files, ide_user, completed, reopen_workspace
 
 app_name = 'workspace'
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
     path('prepare-files/', prep_files, name='prepare-files'),
     path('send-files/', send_files, name='send-files'),
     path('completed/', completed, name='completed'),
+    path('reopen_workspace/', reopen_workspace, name='reopen_workspace'),
 ]
