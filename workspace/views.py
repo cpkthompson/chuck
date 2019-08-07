@@ -107,7 +107,7 @@ def completed(request):
     complete = workspacem.finished
     workspacem.save()
     url = workspacem.url
-    res = requests.get('https://codeln-staging.herokuapp.com/jobs/uncomplete',
+    res = requests.get('https://localhost:8081/jobs/uncomplete',
                       params={'setup_code': '4f6df07b-38bc-4b2b-8557-18f8e02e7f2f'},
                       )
     print(res)
