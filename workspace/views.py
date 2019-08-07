@@ -107,8 +107,31 @@ def completed(request):
     complete = workspacem.finished
     workspacem.save()
     url = workspacem.url
+    res = requests.get('https://codeln-staging.herokuapp.com/jobs/uncomplete',
+                      params={'setup_code': '4f6df07b-38bc-4b2b-8557-18f8e02e7f2f'},
+                      )
+    print(res)
+    context = {
+        'url': url,
+        'workspace_name': workspace_current,
+        'workspace_end_time': workspace_end_time,
+        'completed': complete,
+    }
+    return render(request, 'workspace/workspace.html', context=context)
 
-
+def reopen_workspcae(request):
+    workspacem = IdeUser.objects.all()[0]
+    workspace_current = workspacem.workspace_name
+    time = workspacem.end_time - datetime.datetime.now(tz=datetime.timezone.utc)
+    workspace_end_time = convert_time(time.total_seconds())
+    workspacem.finished = False
+    complete = workspacem.finished
+    workspacem.save()
+    url = workspacem.url
+    # res = requests.get('https://codeln-staging.herokuapp.com/jobs/uncomplete',
+    #                   params={'setup_code': '4f6df07b-38bc-4b2b-8557-18f8e02e7f2f'},
+    #                   )
+    # print(res)
     context = {
         'url': url,
         'workspace_name': workspace_current,
